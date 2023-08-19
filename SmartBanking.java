@@ -23,6 +23,8 @@ public class SmartBanking {
 
   static int index=0;
   static int deposit=0;
+  static String account;
+
 
 
   public static void main(String[] args) {
@@ -160,7 +162,9 @@ public class SmartBanking {
         case DEPOSITS:
           
          
-         accountNumValidation();
+        accountNumValidation();
+        System.out.printf("Current Balance: %s\n",accountDetails[index][2]);
+
 
          do{ 
           valid=true;
@@ -187,6 +191,8 @@ public class SmartBanking {
         case WITHDRAW:
 
         accountNumValidation();
+        System.out.printf("Current Balance: %s\n",accountDetails[index][2]);
+
           int withdrawal;
 
         do{
@@ -206,6 +212,33 @@ public class SmartBanking {
           accountDetails[index][2] = temp + "";
           System.out.println(accountDetails[index][2]);
 
+          break;
+
+        case TRANSFER:
+
+          System.out.println("From Account: ");
+          accountNumValidation();
+          System.out.printf("From Account Number: %s\n",account);
+          for (int i = 0; i < accountDetails.length; i++) {
+            if(account.equals(accountDetails[i][0])){
+              index = i;
+              break;
+            }
+          }
+          System.out.printf("From Account Name: %s\n",accountDetails[index][1]);
+          System.out.printf("From Account Current Balance: Rs. %,.2f\n",Float.valueOf(accountDetails[index][2]));
+
+          System.out.println("To Account: ");
+          accountNumValidation();
+          System.out.printf("To Account Number: %s\n",account);
+          for (int i = 0; i < accountDetails.length; i++) {
+            if(account.equals(accountDetails[i][0])){
+              index = i;
+              break;
+            }
+          }
+          System.out.printf("To Account Name: %s\n",accountDetails[index][1]);
+          System.out.printf("To Account Current Balance: Rs. %,.2f\n",Float.valueOf(accountDetails[index][2]));
 
           default:
           System.exit(0);
@@ -219,18 +252,18 @@ public class SmartBanking {
           do{
             valid = true;
             System.out.print("Enter the Account No.: ");
-          String account = scanner.nextLine().strip();
+            account = scanner.nextLine().strip();
 
           if(account.isBlank()){
             System.out.printf("%sAccount Number can't be empty. Do you want to try again (Y/n)? %s", red_bold, reset); 
-            if(scanner.nextLine().strip().toUpperCase().equals("Y")) continue;
+            if(scanner.nextLine().strip().toUpperCase().equals("Y")) {valid=false;continue mainLoop;}
             screen = DASHBOARD; 
             break; 
           }
 
           if(account.length()!=9 || !account.startsWith("SDB-")){
             System.out.printf("%sInvalid format. Do you want to try again (Y/n)? %s", red_bold, reset); 
-            if(scanner.nextLine().strip().toUpperCase().equals("Y")) continue;
+            if(scanner.nextLine().strip().toUpperCase().equals("Y")) {valid=false;continue mainLoop;}
             screen = DASHBOARD;     
             break;
           }
@@ -240,15 +273,14 @@ public class SmartBanking {
             for (int j = 0; j < accountDetails.length; j++) {
               if(accountDetails[j][0].equals(account)){
                 index = j;
-              break loop1;
-            }
+                break loop1;
+              }
             } 
               System.out.printf("%sAccount Number is not found. Do you want to try again (Y/n)? %s", red_bold, reset); 
-              if(scanner.nextLine().strip().toUpperCase().equals("Y")) continue mainLoop ;
+              if(scanner.nextLine().strip().toUpperCase().equals("Y")) {valid=false;continue mainLoop;}
               screen = DASHBOARD;     
               break;
           }
           }while(!valid);
-          System.out.printf("Current Balance: %s\n",accountDetails[index][2]);
   }
 }
