@@ -159,12 +159,96 @@ public class SmartBanking {
 
         case DEPOSITS:
           
-     
+         
+         accountNumValidation();
+
+         do{ 
+          valid=true;
+          System.out.print("Enter the amount to deposit: ");
+          deposit = scanner.nextInt();
+          scanner.nextLine();
+          
+          if(deposit<500){
+              System.out.printf("%sInsufficient Amount. %s\n", red_bold, reset); 
+              valid=false;
+          }
+          }while(!valid);
+
+          int temp = Integer.valueOf(accountDetails[index][2]);
+          temp+=deposit;
+          accountDetails[index][2] = temp + "";
+          System.out.println(accountDetails[index][2]);
+
+          System.out.println("Do you want to deposit again (Y/n)?");
+          if(scanner.nextLine().strip().toUpperCase().equals("Y")) continue;
+          screen = DASHBOARD;
+          break;
+        
+        case WITHDRAW:
+
+        accountNumValidation();
+          int withdrawal;
+
+        do{
+          valid =true;
+          System.out.print("Enter the amount to withdraw: ");
+          withdrawal = scanner.nextInt();
+          scanner.nextLine();
+
+          if(withdrawal<100){
+            System.out.printf("%sInsufficient Amount. %s\n", red_bold, reset); 
+            valid=false;
+          }
+
+        }while(!valid);
+          temp = Integer.valueOf(accountDetails[index][2]);
+          temp-=withdrawal;
+          accountDetails[index][2] = temp + "";
+          System.out.println(accountDetails[index][2]);
+
+
           default:
           System.exit(0);
       }
     } while (true);
   }
-
   
+  public static void accountNumValidation(){
+    boolean valid;
+    mainLoop:
+          do{
+            valid = true;
+            System.out.print("Enter the Account No.: ");
+          String account = scanner.nextLine().strip();
+
+          if(account.isBlank()){
+            System.out.printf("%sAccount Number can't be empty. Do you want to try again (Y/n)? %s", red_bold, reset); 
+            if(scanner.nextLine().strip().toUpperCase().equals("Y")) continue;
+            screen = DASHBOARD; 
+            break; 
+          }
+
+          if(account.length()!=9 || !account.startsWith("SDB-")){
+            System.out.printf("%sInvalid format. Do you want to try again (Y/n)? %s", red_bold, reset); 
+            if(scanner.nextLine().strip().toUpperCase().equals("Y")) continue;
+            screen = DASHBOARD;     
+            break;
+          }
+          int index=0;
+    loop1:
+          for (int i = 0; i < accountDetails.length; i++) {
+            for (int j = 0; j < accountDetails.length; j++) {
+              if(accountDetails[j][0].equals(account)){
+                index = j;
+              break loop1;
+            }
+            } 
+              System.out.printf("%sAccount Number is not found. Do you want to try again (Y/n)? %s", red_bold, reset); 
+              if(scanner.nextLine().strip().toUpperCase().equals("Y")) continue mainLoop ;
+              screen = DASHBOARD;     
+              break;
+          }
+          }while(!valid);
+          System.out.printf("Current Balance: %s\n",accountDetails[index][2]);
+  }
 }
