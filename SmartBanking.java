@@ -7,8 +7,10 @@ public class SmartBanking {
   static final String reset = "\033[0m";
   static final String blue = "\033[034m";
   static final String red_bold = "\033[31;1m";
+  static final String green_bold = "\033[32;1m";
 
   static String[][] accountDetails = new String[0][3];
+
   static final String DASHBOARD = "💰" + " Welcome to Smart Banking App";
   static final String OPEN_NEW_ACCOUNT = "➕"+ " Open New Account";
   static final String DEPOSITS = "🔺"+" Deposit Money";
@@ -17,6 +19,10 @@ public class SmartBanking {
   static final String CHECK_BALANCE = "💸"+" Check Account Balance";
   static final String DELETE = "➖"+" Drop Existing Account";
   static final String EXIT = "Exit";
+
+  static final String ERROR_MSG = String.format("%s%s%s\n", red_bold, "%s", reset);
+  static final String SUCCESS_MSG = String.format("%s%s%s\n", green_bold, "%s", reset);
+  
   static String screen = DASHBOARD;
 
   private static final Scanner scanner = new Scanner(System.in);
@@ -103,7 +109,7 @@ public class SmartBanking {
             System.out.print("Enter Account Holder's Name: ");
             name = scanner.nextLine().strip();
             if (name.isBlank()) {
-              System.out.printf("%sName can't be empty%s\n", red_bold, reset);
+              System.out.printf(ERROR_MSG, "Name can't be empty");
               valid = false;
               continue;
             }
@@ -114,7 +120,7 @@ public class SmartBanking {
                   Character.isSpaceChar(name.charAt(i))
                 )
               ) {
-                System.out.printf("%sInvalid Name%s\n", red_bold, reset);
+                System.out.printf(ERROR_MSG, "Invalid Name");
                 valid = false;
                 break;
               }
@@ -127,7 +133,7 @@ public class SmartBanking {
             deposit = scanner.nextDouble();
             scanner.nextLine();
             if (!(deposit >= 5000)) {
-              System.out.printf("%sInsufficient Amount%s\n", red_bold, reset);
+              System.out.printf(ERROR_MSG, "Insufficient Amount");
               valid = false;
               continue;
             }
@@ -147,9 +153,9 @@ public class SmartBanking {
 
           System.out.println();
           System.out.printf(
-            "%s : %s added sucessfully.\nDo you want to add new customer (Y/n)? ",
+            "%s%s : %s added sucessfully.\nDo you want to add new customer (Y/n)?%s ",green_bold,
             id,
-            name
+            name,reset
           );
           if (scanner.nextLine().strip().toUpperCase().equals("Y")) continue;
           screen = DASHBOARD;
@@ -171,7 +177,7 @@ public class SmartBanking {
           scanner.nextLine();
           
           if(deposit<500){
-              System.out.printf("%sInsufficient Amount. %s\n", red_bold, reset); 
+              System.out.printf(ERROR_MSG, "Insufficient Amount."); 
               valid=false;
           }
           }while(!valid);
@@ -181,7 +187,7 @@ public class SmartBanking {
           accountDetails[index][2] = temp + "";
           System.out.printf("New Account Balance        : Rs. %,.2f\n",Float.valueOf(accountDetails[index][2]));
 
-          System.out.printf("\n%sRs. %,.2f depositd successfully.Do you want to deposit again (Y/n)%s?",blue,deposit,reset);
+          System.out.printf("\n%sRs. %,.2f depositd successfully.Do you want to deposit again (Y/n)?%s",green_bold,deposit,reset);
           if(scanner.nextLine().strip().toUpperCase().equals("Y")) continue;
           screen = DASHBOARD;
           break;
@@ -212,7 +218,7 @@ public class SmartBanking {
           System.out.printf("New Account Balance: Rs. %,.2f\n",Float.valueOf(accountDetails[index][2]));
 
           System.out.printf(
-            "\n%sWithdrawal from account %s is sucessfull.\nDo you want to withdraw again (Y/n)? %s",blue,
+            "\n%sWithdrawal from account %s is sucessfull.\nDo you want to withdraw again (Y/n)? %s",green_bold,
             accountDetails[index][0],reset
             
           );
@@ -315,7 +321,41 @@ public class SmartBanking {
           screen = DASHBOARD;
           break;
 
-        
+          case DELETE:
+
+          accountNumValidation();
+          if(!valid) continue;
+          System.out.printf("Account holder's name: %s\n",accountDetails[index][1]);
+          System.out.printf("Current Account Balance: Rs. %,.2f\n",Float.valueOf(accountDetails[index][2]));
+
+          String deleteNum = accountDetails[index][0];
+          String deleteName = accountDetails[index][1];
+
+          System.out.print("Are you sure you want to delete (Y/n)? ");
+          if (scanner.nextLine().strip().toUpperCase().equals("Y")){
+            tempDetails = new String[accountDetails.length-1][3];
+            for (int i = 0; i < index; i++) {
+              tempDetails[i]=accountDetails[i];
+            }
+
+            for (int i = index,j=i-1; i < accountDetails.length-1; i++) {
+              tempDetails[i] = accountDetails[i+1];
+            }
+
+            accountDetails = tempDetails;
+
+            System.out.printf("%s : %s has been deleted successfully. Do you want to continue (Y/n)? ",deleteNum,deleteName);
+          if (scanner.nextLine().strip().toUpperCase().equals("Y"))
+          continue;
+          screen = DASHBOARD;
+          break;
+            
+          }
+          screen = DASHBOARD;
+          break;
+
+          default:
+          System.exit(0);
       }
     } while (true);
   }
@@ -327,24 +367,17 @@ public class SmartBanking {
             account = scanner.nextLine().strip();
 
           if(account.isBlank()){
-            System.out.printf("%sAccount Number can't be empty. Do you want to try again (Y/n)? %s", red_bold, reset); 
-            if(scanner.nextLine().strip().toUpperCase().equals("Y")) {
+            System.out.printf("%sAccount Number can't be empty.%s\n", red_bold, reset); 
               valid=false;
-              continue ;
-            }  
-            screen = DASHBOARD; 
-            return; 
           }
 
-          if(account.length()!=9 || !account.startsWith("SDB-")){
-            System.out.printf("%sInvalid format. Do you want to try again (Y/n)? %s", red_bold, reset); 
-            if(scanner.nextLine().strip().toUpperCase().equals("Y")) {
+          else if(account.length()!=9 || !account.startsWith("SDB-")){
+            System.out.printf("%sInvalid format.%s\n", red_bold, reset); 
               valid = false;
-              continue ;}
-            screen = DASHBOARD;     
-            return;
           }
 
+
+          else{
             boolean exists = false;
       loop1:
             for (int j = 0; j < accountDetails.length; j++) {
@@ -354,19 +387,22 @@ public class SmartBanking {
                 break loop1;
               }
             } 
-            
          
-          if(!exists){
-              System.out.printf("%sAccount Number is not found. Do you want to try again (Y/n)? %s", red_bold, reset); 
-              if(scanner.nextLine().strip().toUpperCase().equals("Y")) {
-                valid=false;
-                continue;
-              }
-                screen = DASHBOARD; 
-                break;
+            if(!exists){
+              System.out.printf("%sAccount Number is not found.%s\n", red_bold, reset); 
+              valid=false;
+            }
           }
-              
-          
+
+          if(!valid){
+            System.out.printf("%sDo you want to try again (Y/n)?%s",red_bold,reset);
+            if(scanner.nextLine().strip().toUpperCase().equals("Y")) {
+              continue;
+            }
+            screen = DASHBOARD;
+            return;
+          }
+
           }while(!valid);
   }
 }
