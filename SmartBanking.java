@@ -18,10 +18,11 @@ public class SmartBanking {
   static final String TRANSFER = "🔁"+" Transfer Money";
   static final String CHECK_BALANCE = "💸"+" Check Account Balance";
   static final String DELETE = "➖"+" Drop Existing Account";
-  static final String EXIT = "Exit";
+  static final String EXIT = "🔚"+" Exit";
 
   static final String ERROR_MSG = String.format("%s%s%s\n", red_bold, "%s", reset);
   static final String SUCCESS_MSG = String.format("%s%s%s\n", green_bold, "%s", reset);
+  static final String THANKYOU_MSG = "%sThank you for banking with Smart Banking App %s" + "📱\n\n";
   
   static String screen = DASHBOARD;
 
@@ -164,7 +165,7 @@ public class SmartBanking {
 
             System.out.printf("New Account Balance        : Rs. %,.2f\n",Float.valueOf(accountDetails[index][2]));
 
-            System.out.printf("\n%sRs. %,.2f depositd successfully.Do you want to deposit again (Y/n)?%s",green_bold,deposit,reset);
+            System.out.printf("\n%sRs. %,.2f depositd to account no. %s successfully.Do you want to deposit again (Y/n)?%s",green_bold,deposit,accountDetails[index][0],reset);
             if(scanner.nextLine().strip().toUpperCase().equals("Y")) continue;
             screen = DASHBOARD;
             break;
@@ -230,7 +231,15 @@ public class SmartBanking {
 
           System.out.println("To Account:   ");
           accountNumValidation();
+          System.out.println(index + " "+ fromIndex);
           if(!valid) continue;
+          if(index==fromIndex){
+            System.out.printf("%sOwn account transfer is invalid. Do you want to try again?%s",red_bold,reset);
+            if(scanner.nextLine().toUpperCase().strip().equals("Y")) {accountNumValidation();if(!valid) continue;}
+            screen = DASHBOARD;
+            break;
+          }
+
 
           System.out.println("-".repeat(50));
           System.out.printf("To Account Number           : %s\n",account);
@@ -276,7 +285,7 @@ public class SmartBanking {
           System.out.printf("New From Account Balance: %s\n",fromBalance);
           System.out.printf("New To Account Balance: %s\n",toBalance);
 
-          System.out.printf("%sTransfer successfull.Do you want to continue (Y/n)? %s",green_bold,reset);
+          System.out.printf("%sTransfer from account %s to account %s is successfull.Do you want to continue (Y/n)? %s",green_bold,accountDetails[fromIndex][0],accountDetails[index][0],reset);
           if(scanner.nextLine().strip().toUpperCase().equals("Y")) continue;
           screen = DASHBOARD;
           break;
@@ -337,6 +346,8 @@ public class SmartBanking {
           break;
 
           default:
+          
+          System.out.printf(THANKYOU_MSG,green_bold,reset);
           System.exit(0);
       }
     } while (true);
